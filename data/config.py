@@ -4,10 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BOT_TOKEN = "" # прописать токен
+BOT_TOKEN = ""
 
 admins = [
-    "", # прописать id чата с админом
+    "",
 ]
 
 ip = os.getenv("ip")
