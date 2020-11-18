@@ -9,5 +9,4 @@ menu = ReplyKeyboardMarkup(
             KeyboardButton(text="Декодировать сообщение")
         ],
     ],
-    resize_keyboard=True
-)
+    resize_keyboard=True)
