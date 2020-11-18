@@ -11,7 +11,7 @@ from aiogram.dispatcher import FSMContext
 async def show_menu(message: Message):
     await message.answer(f'''
 Привет, {message.from_user.full_name}!
-Этот бот предназначен для кодирования английских сообщений в Азбуку Морзу и обратно''')
+Этот бот предназначен для кодирования английских сообщений в Азбуку Морзе и обратно''')
     await message.answer('Попробуй)')
     await message.answer("Выбери действие из меню ниже", reply_markup=menu)
 
@@ -21,7 +21,7 @@ async def get_answer(message: Message):
     await message.answer(f"Выбрано: {message.text}")  # reply_markup=ReplyKeyboardRemove()
     if message.text == 'Кодировать сообщение':
         await Morse.code_english_to_morse.set()
-        await message.answer('Введи сообщение на английском, которое необходимо закодировать в Азбуку Морзе....',
+        await message.answer('Введи сообщение на английском, которое необходимо закодировать в Азбуку Морзе:',
                              reply_markup=ReplyKeyboardRemove())
     elif message.text == 'Декодировать сообщение':
         await Morse.code_morse_to_english.set()
