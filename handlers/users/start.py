@@ -7,37 +7,40 @@ from states.morse import Morse
 from aiogram.dispatcher import FSMContext
 
 
+# хэндлер ловит определенное состояние, которое устанавливается в ветвлении
 @dp.message_handler(CommandStart())  # Старое: @dp.message_handler(Command("menu"))
 async def show_menu(message: Message):
     await message.answer(f'''
 Привет, {message.from_user.full_name}!
 Этот бот предназначен для кодирования английских сообщений в Азбуку Морзе и обратно''')
     await message.answer('Попробуй)')
-    await message.answer("Выбери действие из меню ниже", reply_markup=menu)
+    await message.answer("Выбери действие из меню ниже", reply_markup=menu)  # Выводится главное меню
 
 
-@dp.message_handler(Text(equals=["Кодировать сообщение", "Декодировать сообщение"]))
-async def get_answer(message: Message):
+@dp.message_handler(Text(equals=["Кодировать сообщение", "Декодировать сообщение"]))  # Обрабатывает варианты
+async def get_answer(message: Message):                                               # ответа главного меню
     await message.answer(f"Выбрано: {message.text}")  # reply_markup=ReplyKeyboardRemove()
     if message.text == 'Кодировать сообщение':
-        await Morse.code_english_to_morse.set()
+        await Morse.code_english_to_morse.set()  # Устанавливается новое состояние для кодирования
         await message.answer('Введи сообщение на английском, которое необходимо закодировать в Азбуку Морзе:',
-                             reply_markup=ReplyKeyboardRemove())
+                             reply_markup=ReplyKeyboardRemove())  # Убирается главное меню для ввода и преобразования
     elif message.text == 'Декодировать сообщение':
-        await Morse.code_morse_to_english.set()
+        await Morse.code_morse_to_english.set()  # Устанавливается новое состояния для декодирования
         await message.answer('Введи сообщение на Азбуке Морзе, которое необходимо декодировать в простое английское '
                              'сообщение:',
-                             reply_markup=ReplyKeyboardRemove())
+                             reply_markup=ReplyKeyboardRemove())  # Убирается главное меню для ввода и преобразования
 
 
+# хэндлер ловит определенное состояние, которое устанавливается в ветвлении
 @dp.message_handler(state=Morse.code_english_to_morse)
 async def code_english_to_morse(english_input: Message, state: FSMContext):
-    if english_input.text == "Отмена":
-        await state.finish()
-        await english_input.answer('Отмена.', reply_markup=menu)
-    else:
-        await english_input.answer('Ваше сообщение на Азбуке Морзе:', reply_markup=cancel)
-    # async with state.proxy() as data:
+    if english_input.text == "Отмена":  # Если после установления состояния вводится "Отмена"
+        await state.finish()  # При ловле отмены состояние сбрасывается
+        await english_input.answer('Отмена.', reply_markup=menu)  # Кроме сброса также снова выводится главное меню
+        # для удобства
+    else:  # Если нет ловли отмены, то выводится сообщение перед результатом преобразования и ...
+        await english_input.answer('Ваше сообщение на Азбуке Морзе:', reply_markup=cancel)  # меню отмены вызывается
+        # async with state.proxy() as data:  # Какая-то хрень для связи с БД вроде бы, но не уверен
     #     data['text'] = english_input.text
     #     user_message = data['text']
     english_input.text = english_input.text.upper() + ' '
@@ -67,13 +70,15 @@ async def code_english_to_morse(english_input: Message, state: FSMContext):
     # await state.finish()
 
 
+# хэндлер ловит определенное состояние, которое устанавливается в ветвлении
 @dp.message_handler(state=Morse.code_morse_to_english)
 async def decode_morse_to_english(morse_input: Message, state: FSMContext):
-    if morse_input.text == "Отмена":
-        await state.finish()
-        await morse_input.answer('Отмена.', reply_markup=menu)
-    else:
-        await morse_input.answer('Ваше сообщение на Азбуке Морзе:', reply_markup=cancel)
+    if morse_input.text == "Отмена":  # Если после установления состояния вводится "Отмена"
+        await state.finish()     # При ловле отмены состояние сбрасывается
+        await morse_input.answer('Отмена.', reply_markup=menu)  # Кроме сброса также снова выводится главное меню
+        # для удобства
+    else: # Если нет ловли отмены, то выводится сообщение перед результатом преобразования и ...
+        await morse_input.answer('Ваше сообщение на Азбуке Морзе:', reply_markup=cancel) # меню отмены вызывается
     # async with state.proxy() as data:
     #     data['text'] = morse_input.text
     #     user_message = data['text']
